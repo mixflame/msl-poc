@@ -42,30 +42,26 @@ Setup the schema:
 
 `netlify dev:exec functions/msl/create-schema.js`
 
-
 Test creating something
 
-`curl -XPOST "http://localhost:8888/.netlify/functions/msl?name=foouuu&port=9617"`
+`curl -XPOST "http://localhost:8888/.netlify/functions/msl/online?name=foouuu&port=9617"`
+
+Test name change
+
+`curl -XPOST "http://localhost:8888/.netlify/functions/msl/online?name=bazouuu&port=9617"`
 
 Test retrieving the list
 
-`curl -XPOST "http://localhost:8888/.netlify/functions/msl"`
+`curl "http://localhost:8888/.netlify/functions/msl"`
 
 Test deleting
 
-`curl -XDELETE "http://localhost:8888/.netlify/functions/msl?port=9617"`
+`curl "http://localhost:8888/.netlify/functions/msl/offline?port=9617"`
 
+### deployment
 
-### original notes
+netlify functions must be deployed using the `netlify deploy` command
 
-/msl
- - return the list
-/online
- - go online
- - check if TCP socket is openable.
-/offline
- - go offline
-
-
+## things that might become important later
 
 https://community.netlify.com/t/functions-abuse-prevention/17814/4
