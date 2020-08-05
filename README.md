@@ -1,6 +1,6 @@
 ## production usage
 
-This is a master server list running on netlify functions using faundadb for persistence.
+This is a master server list running on netlify functions using faunadb for persistence.
 
 The following are simple GET requests. Your IP is determined automatically and your port checked to make sure it can be connected to. The timeout for this connection is one second. You can have multiple servers (with different port numbers) running on a single IP address. The system will not allow you to register the same IP and Port twice (for example, with different names, otherwise known as aliases. Aliases are disabled. One name per server/port combination so the server list won't have duplicate entries for the same host/port combination.
 
