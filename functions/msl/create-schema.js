@@ -9,31 +9,45 @@ function createFaunaDB() {
   if (!process.env.FAUNADB_SERVER_SECRET) {
     console.log('No FAUNADB_SERVER_SECRET in environment, skipping DB setup')
   }
-  console.log('Create the database!')
   const client = new faunadb.Client({
     secret: process.env.FAUNADB_SERVER_SECRET,
   })
 
   /* Based on your requirements, change the schema here */
-  return client
-    .query(q.Create(q.Ref('classes'), { name: 'items' }))
-    .then(() => {
-      console.log('Created items class')
-      return client.query(
-        q.Create(q.Ref('indexes'), {
-          name: 'all_items',
-          source: q.Ref('classes/items'),
-          active: true,
-        })
-      )
-    })
-
-    .catch(e => {
-      if (e.requestResult.statusCode === 400 && e.message === 'instance not unique') {
-        console.log('DB already exists')
-      }
-      throw e
-    })
+  return client.query(
+    q.CreateCollection({ name: 'serverlist' })
+  ).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'serverlist_by_ip_and_port',
+        source: q.Collection('serverlist'),
+        terms: [
+          { field: ['data', 'ip'] },
+          { field: ['data', 'port'] }
+        ],
+      }),
+    )
+  }).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: true,
+        name: 'unique_serverlist_by_ip_and_port_and_name',
+        source: q.Collection('serverlist'),
+        terms: [
+          { field: ['data', 'ip'] },
+          { field: ['data', 'port'] },
+          { field: ['data', 'name'] }
+        ],
+      }),
+    )
+  })
+  .catch(e => {
+    if (e.requestResult.statusCode === 400 && e.message === 'instance not unique') {
+      console.log('DB already exists')
+    }
+    throw e
+  })
 }
 
 createFaunaDB()
