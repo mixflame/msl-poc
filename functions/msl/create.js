@@ -8,12 +8,16 @@ const client = new faunadb.Client({
   secret: process.env.FAUNADB_SERVER_SECRET,
 })
 
+// May not be reliable... see discusson here:
+// https://github.com/nodejs/node/issues/5757#issuecomment-549761128
+// Could end up running up an expsneive bill due to hanging sockets
 function attemptConnection(ip, port) {
   return new Promise((resolve, reject) => {
     var socket = new net.Socket();
     socket.setTimeout(1000, () => socket.destroy());
     socket.once('connect', () => {
       socket.destroy();
+      resolve();
     });
     socket.once('error', ()=>{
       console.log("CONNERR");
@@ -37,30 +41,23 @@ exports.handler = async (event, context) => {
     return client
       .query(q.Create(q.Ref('classes/servers'), { data }))
       .then(response => {
-        console.log('success', response)
         /* Success! return the response with statusCode 200 */
         return {
           statusCode: 200,
-          body: JSON.stringify(response),
+          body: "Added to master server list",
         }
       })
       .catch(error => {
-        console.log('error', error)
         /* Error! return the error with statusCode 400 */
         return {
           statusCode: 400,
           body: JSON.stringify(error),
         }
       })
-
   }).catch(()=>{
-    console.log("CONNERR");
     return {
       statusCode: 400,
       body: "Failed to connect to "+ip+":"+port+"\n",
     }
   })
-
- 
-
 }
