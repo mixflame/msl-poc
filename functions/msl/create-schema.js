@@ -66,7 +66,7 @@ function createBannedServers() {
       q.CreateIndex({
         unique: false,
         name: 'banned_servers_by_ip',
-        source: q.Collection('serverlist'),
+        source: q.Collection('banned_servers'),
         terms: [
           { field: ['data', 'ip'] }
         ],
