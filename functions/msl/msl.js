@@ -170,7 +170,7 @@ async function runGetList() {
 
   function faunaToGchatProtoStyle(fin) {
     const { ip, name, port } = fin.data;
-    let banned = await client.query(q.Exists(q.Match(q.Index('banned_servers_by_ip'), ip)));
+    let banned = client.query(q.Exists(q.Match(q.Index('banned_servers_by_ip'), ip)));
     if(!banned)
     return `SERVER::!!::${name}::!!::${ip}::!!::${port}`;
     else
