@@ -75,6 +75,15 @@ async function runGoOnline(event) {
 
     console.log("connection attempt succeeded");
 
+    let banned = await client.query(q.Exists(q.Match(q.Index('banned_servers_by_ip'), ip)));
+
+    if(banned) {
+      return {
+        statusCode: 403,
+        body: "Your server has been banned from the MSL.",
+      }
+    }
+
     let existingItem = null;
 
     // find existing item w that ip and port

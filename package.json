@@ -17,6 +17,5 @@
     "url": "https://github.com/kfatehi/msl-poc/issues"
   },
   "homepage": "https://github.com/kfatehi/msl-poc#readme",
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
