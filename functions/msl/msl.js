@@ -17,8 +17,35 @@ exports.handler = async (event, context) => {
     case 'online': return runGoOnline(event);
     case 'offline': return await runGoOffline(event);
     case 'msl': return await runGetList();
+    case 'banned': return await isBannedUser(event);
   }
 
+}
+
+
+async function isBannedUser(event) {
+  let { ip, uuid }  = event.queryStringParameters;
+
+  var banned = await client.query(q.Exists(q.Match(q.Index('banned_users_by_ip'), ip)));
+  if(banned) {
+    return {
+      statusCode: 403,
+      body: "This user is banned.",
+    }
+  }
+
+  banned = await client.query(q.Exists(q.Match(q.Index('banned_users_by_uuid'), uuid)));
+  if(banned) {
+    return {
+      statusCode: 403,
+      body: "This user is banned.",
+    }
+  }
+
+  return {
+    statusCode: 200,
+    body: "This user is not banned.",
+  }
 }
 
 
@@ -50,6 +77,8 @@ async function runGoOnline(event) {
 
   
   let { name, port, is_private }  = event.queryStringParameters;
+
+  is_private = is_private == "true";
 
   if (!name || name.length < 3) {
     return {
