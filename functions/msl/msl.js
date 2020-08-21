@@ -75,7 +75,12 @@ async function runGoOnline(event) {
 
     console.log("connection attempt succeeded");
 
-    let banned = await client.query(q.Exists(q.Match(q.Index('banned_servers_by_ip'), ip)));
+    let existingItem = null;
+
+    // find existing item w that ip and port
+    let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
+    
+    let banned = dupeExist && dupeExist.data.banned == true;
 
     if(banned) {
       return {
@@ -83,11 +88,7 @@ async function runGoOnline(event) {
         body: "Your server has been banned from the MSL.",
       }
     }
-
-    let existingItem = null;
-
-    // find existing item w that ip and port
-    let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
+    
     if (dupeExist) {
       let existingItem = await client.query(q.Get(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
       if (existingItem.data.name === name) {
@@ -169,12 +170,10 @@ async function runGoOffline(event) {
 async function runGetList() {
 
   function faunaToGchatProtoStyle(fin) {
-    const { ip, name, port } = fin.data;
-    let banned = client.query(q.Exists(q.Match(q.Index('banned_servers_by_ip'), ip)));
-    if(!banned)
-    return `SERVER::!!::${name}::!!::${ip}::!!::${port}`;
-    else
-    return "";
+    const { ip, name, port, banned } = fin.data;
+    if(!banned) {
+      return `SERVER::!!::${name}::!!::${ip}::!!::${port}`;
+    }
   }
 
   let items = [];
