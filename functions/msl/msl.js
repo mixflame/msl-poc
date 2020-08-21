@@ -32,9 +32,7 @@ async function refreshAllServers() {
 
   async function refreshServer(ip, port) {
     console.log("refreshing " + ip)
-    return new Promise((resolve, reject) => {
       let timeoutId = setTimeout(()=>{
-        reject(new Error("socket connect timeout"));
       }, 1000);
       var socket = new net.Socket();
       socket.setTimeout(1000, () => socket.destroy());
@@ -45,16 +43,13 @@ async function refreshAllServers() {
       });
       socket.on('data', function(data) {
         if(data == "REFRESHED\0") {
-          resolve();
           socket.destroy(); // kill client after server's response
         }
       });
       socket.once('error', ()=>{
         clearTimeout(timeoutId);
-        reject(new Error("socket connect timeout"));
       })
       socket.connect(port, ip);    
-    });
   }
 
   let response = await client.query(q.Paginate(q.Documents(q.Collection('serverlist'))));
