@@ -124,10 +124,6 @@ async function runGoOnline(event) {
   
   let { name, port, is_private }  = event.queryStringParameters;
 
-  let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
-  
-  let banned = dupeExist && dupeExist.data.banned == true;
-
   if(banned) {
     return {
       statusCode: 403,
@@ -153,6 +149,11 @@ async function runGoOnline(event) {
       body: "not a valid port",
     }
   }
+
+  let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
+  
+  let banned = dupeExist && dupeExist.data.banned == true;
+
   
   try {
     console.log("making connection attempt to",ip, port);
