@@ -50,4 +50,47 @@ function createServerList() {
   })
 }
 
+function createBannedUsers() {
+  if (!process.env.FAUNADB_SERVER_SECRET) {
+    console.log('No FAUNADB_SERVER_SECRET in environment, skipping DB setup')
+  }
+  const client = new faunadb.Client({
+    secret: process.env.FAUNADB_SERVER_SECRET,
+  })
+
+  /* Based on your requirements, change the schema here */
+  return client.query(
+    q.CreateCollection({ name: 'banned_users' })
+  ).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'banned_users_by_ip',
+        source: q.Collection('banned_users'),
+        terms: [
+          { field: ['data', 'ip'] }
+        ],
+      }),
+    )
+  }).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'banned_users_by_uuid',
+        source: q.Collection('banned_users'),
+        terms: [
+          { field: ['data', 'uuid'] }
+        ],
+      }),
+    )
+  })
+  .catch(e => {
+    if (e.requestResult.statusCode === 400 && e.message === 'instance not unique') {
+      console.log('DB already exists')
+    }
+    throw e
+  })
+}
+
 createServerList()
+createBannedUsers()
