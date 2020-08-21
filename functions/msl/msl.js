@@ -171,7 +171,7 @@ async function runGoOffline(event) {
     let existingItem = null;
     // find existing item w that ip and port
     let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
-    if (dupeExist) {
+    if (dupeExist && !dupeExist.banned) {
       let existingItem = await client.query(q.Get(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
       await client.query(q.Delete(existingItem.ref));
       return {
