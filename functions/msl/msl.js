@@ -145,15 +145,18 @@ async function runGoOnline(event) {
 
   let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
   
-  let banned = dupeExist && dupeExist.data.banned == true;
+  if (dupeExist) {
+    let banned = dupeExist.data.banned;
 
-  if(banned) {
-    return {
-      statusCode: 403,
-      body: "Your server has been banned from the MSL.",
+    if(banned) {
+      return {
+        statusCode: 403,
+        body: "Your server has been banned from the MSL.",
+      }
     }
   }
-  
+
+
   try {
     console.log("making connection attempt to",ip, port);
     // do a connection check to verify this new server.
