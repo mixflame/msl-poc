@@ -33,9 +33,9 @@ async function refreshAllServers() {
   async function refreshServer(ip, port) {
     console.log("refreshing " + ip)
       let timeoutId = setTimeout(()=>{
-      }, 1000);
+      }, 3000);
       var socket = new net.Socket();
-      socket.setTimeout(1000, () => socket.destroy());
+      socket.setTimeout(3000, () => socket.destroy());
       socket.once('connect', () => {
         clearTimeout(timeoutId);
         socket.write("REFRESH\0")
@@ -125,7 +125,7 @@ async function runGoOnline(event) {
   let { name, port, is_private }  = event.queryStringParameters;
 
   let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
-    
+  
   let banned = dupeExist && dupeExist.data.banned == true;
 
   if(banned) {
