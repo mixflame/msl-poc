@@ -18,7 +18,62 @@ exports.handler = async (event, context) => {
     case 'offline': return await runGoOffline(event);
     case 'msl': return await runGetList();
     case 'banned': return await isBannedUser(event);
+    case 'refresh': return await refreshAllServers();
   }
+
+}
+
+
+async function refreshAllServers() {
+
+  async function refresh(fin) {
+    await refreshServer(fin.data.ip, fin.data.port)
+  }
+
+  async function refreshServer(ip, port) {
+    console.log("refreshing " + ip)
+    return new Promise((resolve, reject) => {
+      let timeoutId = setTimeout(()=>{
+        reject(new Error("socket connect timeout"));
+      }, 1000);
+      var socket = new net.Socket();
+      socket.setTimeout(1000, () => socket.destroy());
+      socket.once('connect', () => {
+        clearTimeout(timeoutId);
+        socket.write("REFRESH\0")
+        
+      });
+      socket.on('data', function(data) {
+        if(data == "REFRESHED\0") {
+          resolve();
+          socket.destroy(); // kill client after server's response
+        }
+      });
+      socket.once('error', ()=>{
+        clearTimeout(timeoutId);
+        reject(new Error("socket connect timeout"));
+      })
+      socket.connect(port, ip);    
+    });
+  }
+
+  let response = await client.query(q.Paginate(q.Documents(q.Collection('serverlist'))));
+  
+  const itemRefs = response.data
+  // create new query out of item refs. http://bit.ly/2LG3MLg
+  const getAllItemsDataQuery = itemRefs.map(ref => {
+    return q.Get(ref)
+  })
+  // then query the refs
+  let qdata = await client.query(getAllItemsDataQuery);
+  
+  await qdata.map(refresh);
+
+
+  return {
+    statusCode: 200,
+    body: "refreshed"
+  }  
 
 }
 
