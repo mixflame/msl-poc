@@ -49,7 +49,7 @@ async function runGoOnline(event) {
   }
 
   
-  let { name, port }  = event.queryStringParameters;
+  let { name, port, is_private }  = event.queryStringParameters;
 
   if (!name || name.length < 3) {
     return {
@@ -109,7 +109,7 @@ async function runGoOnline(event) {
       }
     } else {
       // existing item not found, create it
-      await client.query(q.Create(q.Collection('serverlist'), { data: {ip, name, port} }));
+      await client.query(q.Create(q.Collection('serverlist'), { data: {ip, name, port, is_private} }));
       return {
         statusCode: 201,
         body: "server added to the list"
@@ -170,8 +170,8 @@ async function runGoOffline(event) {
 async function runGetList() {
 
   function faunaToGchatProtoStyle(fin) {
-    const { ip, name, port, banned } = fin.data;
-    if(!banned) {
+    const { ip, name, port, banned, is_private } = fin.data;
+    if(!banned && !is_private) {
       return `SERVER::!!::${name}::!!::${ip}::!!::${port}`;
     }
   }
