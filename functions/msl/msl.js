@@ -124,13 +124,6 @@ async function runGoOnline(event) {
   
   let { name, port, is_private }  = event.queryStringParameters;
 
-  if(banned) {
-    return {
-      statusCode: 403,
-      body: "Your server has been banned from the MSL.",
-    }
-  }
-
   is_private = is_private == "true";
 
   if (!name || name.length < 3) {
@@ -154,6 +147,12 @@ async function runGoOnline(event) {
   
   let banned = dupeExist && dupeExist.data.banned == true;
 
+  if(banned) {
+    return {
+      statusCode: 403,
+      body: "Your server has been banned from the MSL.",
+    }
+  }
   
   try {
     console.log("making connection attempt to",ip, port);
