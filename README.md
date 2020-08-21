@@ -71,8 +71,8 @@ https://community.netlify.com/t/functions-abuse-prevention/17814/4
 
 ## Global Server Ban
 
-Add `banned: true` to the server in the `serverlist` on FaunaDB and click https://wonderful-heyrovsky-0c77d0.netlify.app/.netlify/functions/msl/refresh
+Add `banned: true` to the server in the `serverlist` on FaunaDB and run gchat-refresh https://github.com/mixflame/gchat-refresh
 
 ## Global User Ban
 
-Add `{"ip": "<ip to ban>"}` to the `banned_users` collection in Fauna. Can also be banned by UUID. And run refresh https://wonderful-heyrovsky-0c77d0.netlify.app/.netlify/functions/msl/refresh
+Add `{"ip": "<ip to ban>"}` to the `banned_users` collection in Fauna. Can also be banned by UUID. And run gchat-refresh https://github.com/mixflame/gchat-refresh
