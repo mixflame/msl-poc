@@ -101,6 +101,17 @@ async function runGoOnline(event) {
   // https://github.com/nodejs/node/issues/5757#issuecomment-549761128
   // So this has some added code for timeout enforcement...
   async function attemptConnection(ip, port) {
+    let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
+    
+    let banned = dupeExist && dupeExist.data.banned == true;
+
+    if(banned) {
+      return {
+        statusCode: 403,
+        body: "Your server has been banned from the MSL.",
+      }
+    }
+    
     return new Promise((resolve, reject) => {
       let timeoutId = setTimeout(()=>{
         reject(new Error("socket connect timeout"));
@@ -152,16 +163,6 @@ async function runGoOnline(event) {
     let existingItem = null;
 
     // find existing item w that ip and port
-    let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
-    
-    let banned = dupeExist && dupeExist.data.banned == true;
-
-    if(banned) {
-      return {
-        statusCode: 403,
-        body: "Your server has been banned from the MSL.",
-      }
-    }
     
     if (dupeExist) {
       let existingItem = await client.query(q.Get(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
