@@ -144,17 +144,6 @@ async function runGoOnline(event) {
   }
 
   let dupeExist = await client.query(q.Exists(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
-  
-  if (dupeExist) {
-    let banned = dupeExist.data.banned;
-
-    if(banned) {
-      return {
-        statusCode: 403,
-        body: "Your server has been banned from the MSL.",
-      }
-    }
-  }
 
 
   try {
@@ -170,6 +159,15 @@ async function runGoOnline(event) {
     
     if (dupeExist) {
       let existingItem = await client.query(q.Get(q.Match(q.Index('serverlist_by_ip_and_port'), ip, port)));
+      let banned = existingItem.data.banned;
+
+      if(banned) {
+        return {
+          statusCode: 403,
+          body: "Your server has been banned from the MSL.",
+        }
+      }
+      
       if (existingItem.data.name === name) {
         return {
           statusCode: 200,
