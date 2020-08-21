@@ -41,11 +41,6 @@ async function refreshAllServers() {
         socket.write("REFRESH\0")
         
       });
-      socket.on('data', function(data) {
-        if(data == "REFRESHED\0") {
-          socket.destroy(); // kill client after server's response
-        }
-      });
       socket.once('error', ()=>{
         clearTimeout(timeoutId);
       })
