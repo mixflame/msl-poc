@@ -65,3 +65,14 @@ netlify functions must be deployed using the `netlify deploy` command
 ## things that might become important later
 
 https://community.netlify.com/t/functions-abuse-prevention/17814/4
+
+
+# How to Admin
+
+## Global Server Ban
+
+Add `banned: true` to the server in the `serverlist` on FaunaDB and click https://wonderful-heyrovsky-0c77d0.netlify.app/.netlify/functions/msl/refresh
+
+## Global User Ban
+
+Add `{"ip": "<ip to ban>"}` to the `banned_users` collection in Fauna. Can also be banned by UUID. And run refresh https://wonderful-heyrovsky-0c77d0.netlify.app/.netlify/functions/msl/refresh
