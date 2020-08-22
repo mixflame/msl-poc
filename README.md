@@ -76,3 +76,11 @@ Add `banned: true` to the server in the `serverlist` on FaunaDB and run gchat-re
 ## Global User Ban
 
 Add `{"ip": "<ip to ban>"}` to the `banned_users` collection in Fauna. Can also be banned by UUID. And run gchat-refresh https://github.com/mixflame/gchat-refresh
+
+# Filter
+
+Add `{"text": "<text to filter>"}` to `filters` collection in Fauna and run gchat-refresh
+
+# Content Report Viewing
+
+Open `content_reports` in Fauna and replace the newlines in the reported text with this https://stackoverflow.com/questions/20515670/replace-n-with-actual-new-line-in-sublime-text
