@@ -155,6 +155,17 @@ function createContentReports() {
         ],
       }),
     )
+  }).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'content_reports_by_date',
+        source: q.Collection('content_reports'),
+        terms: [
+          { field: ['data', 'date'] }
+        ],
+      }),
+    )
   })
   .catch(e => {
     if (e.requestResult.statusCode === 400 && e.message === 'instance not unique') {
@@ -164,7 +175,7 @@ function createContentReports() {
   })
 }
 
+createContentReports()
 createServerList()
 createBannedUsers()
 createFilters()
-createContentReports()
