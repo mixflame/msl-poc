@@ -27,7 +27,7 @@ async function returnFilters() {
 
   function faunaToGchatProtoStyle(fin) {
     const { text } = fin.data;
-    return `FILTER::!!::${text}`;
+    return `${text}`;
   }
 
   let items = [];
@@ -45,7 +45,7 @@ async function returnFilters() {
     
     return {
       statusCode: 200,
-      body: qdata.map(faunaToGchatProtoStyle).join('\n')
+      body: qdata.map(faunaToGchatProtoStyle).join('\r\n\r\n')
     }  
   } catch (error) {
     console.log('error', error)
