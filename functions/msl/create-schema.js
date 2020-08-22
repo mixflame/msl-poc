@@ -111,6 +111,60 @@ function createFilters() {
   })
 }
 
+function createContentReports() {
+  if (!process.env.FAUNADB_SERVER_SECRET) {
+    console.log('No FAUNADB_SERVER_SECRET in environment, skipping DB setup')
+  }
+  const client = new faunadb.Client({
+    secret: process.env.FAUNADB_SERVER_SECRET,
+  })
+
+  /* Based on your requirements, change the schema here */
+  return client.query(
+    q.CreateCollection({ name: 'content_reports' })
+  ).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'content_reports_by_ip',
+        source: q.Collection('content_reports'),
+        terms: [
+          { field: ['data', 'ip'] }
+        ],
+      }),
+    )
+  }).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'content_reports_by_handle',
+        source: q.Collection('content_reports'),
+        terms: [
+          { field: ['data', 'handle'] }
+        ],
+      }),
+    )
+  }).then(() => {
+    return client.query(
+      q.CreateIndex({
+        unique: false,
+        name: 'content_reports_by_text',
+        source: q.Collection('content_reports'),
+        terms: [
+          { field: ['data', 'text'] }
+        ],
+      }),
+    )
+  })
+  .catch(e => {
+    if (e.requestResult.statusCode === 400 && e.message === 'instance not unique') {
+      console.log('DB already exists')
+    }
+    // throw e
+  })
+}
+
 createServerList()
 createBannedUsers()
 createFilters()
+createContentReports()

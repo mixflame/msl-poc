@@ -19,6 +19,28 @@ exports.handler = async (event, context) => {
     case 'msl': return await runGetList();
     case 'banned': return await isBannedUser(event);
     case 'filters': return await returnFilters();
+    case 'report': return await report(event);
+  }
+
+}
+
+
+async function report(event) {
+  try {
+    let { handle, ip, text }  = event.queryStringParameters;
+
+
+    await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text} }));
+
+    return {
+      statusCode: 200
+    }
+  } catch (error) {
+    console.log('error', error)
+    return {
+      statusCode: 400,
+      body: JSON.stringify(error),
+    }
   }
 
 }
