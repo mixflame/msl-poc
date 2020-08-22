@@ -29,9 +29,7 @@ async function report(event) {
   try {
     let { handle, ip }  = event.queryStringParameters;
 
-    event.body=Buffer.from(event.body, 'base64');
-
-    const text = event.body
+    const text = atob(event.body)
 
 
     await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text} }));
