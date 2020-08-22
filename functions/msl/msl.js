@@ -18,8 +18,42 @@ exports.handler = async (event, context) => {
     case 'offline': return await runGoOffline(event);
     case 'msl': return await runGetList();
     case 'banned': return await isBannedUser(event);
+    case 'filters': return await returnFilters();
   }
 
+}
+
+async function returnFilters() {
+
+  function faunaToGchatProtoStyle(fin) {
+    const { text } = fin.data;
+    return `FILTER::!!::${text}`;
+  }
+
+  let items = [];
+  try {
+
+    let response = await client.query(q.Paginate(q.Documents(q.Collection('filters'))));
+  
+    const itemRefs = response.data
+    // create new query out of item refs. http://bit.ly/2LG3MLg
+    const getAllItemsDataQuery = itemRefs.map(ref => {
+      return q.Get(ref)
+    })
+    // then query the refs
+    let qdata = await client.query(getAllItemsDataQuery);
+    
+    return {
+      statusCode: 200,
+      body: qdata.map(faunaToGchatProtoStyle).join('\n')
+    }  
+  } catch (error) {
+    console.log('error', error)
+    return {
+      statusCode: 400,
+      body: JSON.stringify(error),
+    }
+  }
 }
 
 async function isBannedUser(event) {
