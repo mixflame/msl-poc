@@ -27,7 +27,9 @@ exports.handler = async (event, context) => {
 
 async function report(event) {
   try {
-    let { handle, ip, text }  = event.queryStringParameters;
+    let { handle, ip }  = event.queryStringParameters;
+
+    const text = JSON.parse(event.body)["text"]
 
 
     await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text} }));
