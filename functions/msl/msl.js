@@ -29,7 +29,7 @@ async function report(event) {
   try {
     let { handle, ip }  = event.queryStringParameters;
 
-    event.body = new Buffer(event.body, 'base64').toString('utf8')
+    event.body = new Buffer(event.body, 'base64').toString('ascii')
 
     const text = atob()
 
