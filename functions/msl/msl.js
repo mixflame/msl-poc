@@ -29,6 +29,8 @@ async function report(event) {
   try {
     let { handle, ip }  = event.queryStringParameters;
 
+    event.body=Buffer.from(event.body, 'base64');
+
     const text = event.body
 
 
