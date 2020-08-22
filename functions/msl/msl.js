@@ -54,7 +54,7 @@ async function report(event) {
     // current seconds
     let seconds = date_ob.getSeconds();
 
-    let date = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
+    let date = year + "-" + month + "-" + date_num + " " + hours + ":" + minutes + ":" + seconds
 
     await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text, date} }));
 
