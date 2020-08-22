@@ -33,8 +33,30 @@ async function report(event) {
 
     const text = event.body
 
+    let date_ob = new Date();
 
-    await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text} }));
+    // current date
+    // adjust 0 before single digit date
+    let date_num = ("0" + date_ob.getDate()).slice(-2);
+
+    // current month
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+
+    // current year
+    let year = date_ob.getFullYear();
+
+    // current hours
+    let hours = date_ob.getHours();
+
+    // current minutes
+    let minutes = date_ob.getMinutes();
+
+    // current seconds
+    let seconds = date_ob.getSeconds();
+
+    let date = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
+
+    await client.query(q.Create(q.Collection('content_reports'), { data: {ip, handle, text, date} }));
 
     return {
       statusCode: 200
