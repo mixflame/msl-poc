@@ -81,7 +81,7 @@ async function returnFilters() {
   let items = [];
   try {
 
-    let response = await client.query(q.Paginate(q.Documents(q.Collection('filters'))), { size: 100000});
+    let response = await client.query(q.Paginate(q.Documents(q.Collection('filters')), { size: 100000}));
   
     const itemRefs = response.data
     // create new query out of item refs. http://bit.ly/2LG3MLg
@@ -292,7 +292,7 @@ async function runGetList() {
   let items = [];
   try {
 
-    let response = await client.query(q.Paginate(q.Documents(q.Collection('serverlist'))), { size: 100000});
+    let response = await client.query(q.Paginate(q.Documents(q.Collection('serverlist')), { size: 100000}));
   
     const itemRefs = response.data
     // create new query out of item refs. http://bit.ly/2LG3MLg
